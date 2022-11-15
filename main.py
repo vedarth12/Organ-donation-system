@@ -402,6 +402,45 @@ def add_Transaction_head():
 
     return redirect(url_for('add_page2', id='Transaction', error=error,success=success))
 
+
+@app.route("/add_future_donor", methods=['POST','GET'])
+def add_future_donor():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "SELECT * from Future_Donor"
+    mycursor.execute(qry)
+    fields = mycursor.column_names
+    val = ()
+    for field in fields:
+        temp = request.form.get(field)
+        if field not in ['Future_Donor_ID']:        
+            if field not in ['Future_Donor_ID'] and temp != '':
+                temp = "\'"+temp+"\'"
+            if temp == '':
+                temp = 'NULL'
+            val = val + (temp,)
+    
+    mycursor.execute( "START TRANSACTION;" )
+    qry = "INSERT INTO Future_Donor(Name, Date_of_Birth, Medical_insurance, Medical_history, Street, City, State, organ) Values (%s,%s,%s,%s,%s,%s,%s,%s)"%val
+    print(qry)
+    success = True
+    error = False
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error : User not Inserted")
+        error = True
+        success = False
+        
+    mycursor.execute("COMMIT;")
+
+    mydb.commit()
+
+    
+    return redirect(url_for('add_page', id='Future_Donor', error=error,success=success))
+
+
+
 #----------------------------Search-----------------------------------------
 
 @app.route("/search_detail",methods = ['POST','GET'])
