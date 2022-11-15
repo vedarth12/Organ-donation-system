@@ -1,0 +1,88 @@
+<!doctype HTML>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<html>
+    <head>
+        <style type='text/css'>
+            .cert {
+                border: 20px solid tan;
+                width: 750px;
+                height: 563px;
+                display: table-cell;
+                vertical-align: middle;
+                color: black;
+                display: table;
+                font-family: Georgia, serif;
+                font-size: 24px;
+                text-align: center;
+            }
+            .logo {
+                color: tan;
+            }
+
+            .marquee {
+                color: tan;
+                font-size: 48px;
+                margin: 20px;
+            }
+            .assignment {
+                margin: 20px;
+            }
+            .person {
+                border-bottom: 2px solid black;
+                font-size: 32px;
+                font-style: italic;
+                margin: 20px auto;
+                width: 400px;
+            }
+            .reason {
+                margin: 20px;
+            }
+        </style>
+    </head>
+<body>
+    <nav class="navbar navbar-dark bg-dark justify-content-between">
+        <form action="/home">
+            <button style="border: 0px solid transparent;" class="btn btn-outline-primary">HOME</button>
+        </form>
+        <form class="form-inline" action="/logout">
+            <label style="color:white; padding-right: 10px">Hi {{session.get('username')}}!</label>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+        </form>
+    </nav>
+    <div class="jumbotron">
+        <center>
+            <h1 class="display-4">Organ Procurement and Transplantation Management System</h1>
+        </center>
+    </div>
+    <div class="cert" style="margin: auto;">
+        <div class="logo">
+            National Organ and Tissue Transplant Organization
+        </div>
+
+        <div class="marquee">
+            Certificate of Donation
+        </div>
+        <br>
+        <div class="assignment">
+            This certificate is presented to
+        </div>
+        
+        <div class="person">
+            {{res[0][0]}}
+        </div>
+
+        <div class="reason">
+            For pledging to donate their {{res[0][2]}}
+        </div>
+    </div>
+</body>
+</body>
+
+</html> 

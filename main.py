@@ -1,13 +1,12 @@
-from flask import Flask,render_template,session,request,redirect,url_for,flash
-import mysql.connector,hashlib
-import matplotlib.pyplot as plt
-import numpy as np
+from flask import Flask,render_template,session,request,redirect,url_for
+import mysql.connector
+import pandas as pd
 
 mydb = mysql.connector.connect(
   host='localhost',
   user='root',
   password='vedarth12',
-  database = 'DBMS_PROJECT'
+  database = 'new_dbms'
 )
 mycursor = mydb.cursor(buffered=True)
 
@@ -42,72 +41,6 @@ def login():
             return home()
     return render_template('login.html')
 
-@app.route("/show_update_detail",methods=['POST','GET'])
-def show_update_detail():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    if request.method=='POST':
-        if request.form['User_ID'] =='':
-            return render_template("search_detail.html")
-        qry = "Select * from User where User.User_ID = %s" %(request.form['User_ID'])
-        qry1 = "Select * from User_phone_no where User_ID = %s" %(request.form['User_ID'])
-        mycursor.execute(qry)
-        not_found=False
-        res=()
-        if(mycursor.rowcount > 0):
-            res = mycursor.fetchone()
-        else:
-            not_found=True
-        fields = mycursor.column_names
-        qry_upd = "Select * from User where User_ID = %s" %(request.form['User_ID'])
-        mycursor.execute(qry_upd)
-        upd_res = ()
-        if(mycursor.rowcount > 0):
-            upd_res = mycursor.fetchone()
-        fields_upd = mycursor.column_names
-        mycursor.execute(qry1)
-        phone_no = mycursor.fetchall()
-        qry_pat = "select Patient_ID, organ_req, reason_of_procurement, Doctor_name from Patient inner join Doctor on Doctor.Doctor_ID = Patient.Doctor_ID and User_ID = %s" %(request.form['User_ID'])
-        qry_don = "select Donor_ID, organ_donated, reason_of_donation, Organization_name from Donor inner join Organization on Organization.Organization_ID = Donor.Organization_ID and User_ID = %s" %(request.form['User_ID'])
-        qry_trans = "select distinct Transaction.Patient_ID, Transaction.Donor_ID, Organ_ID, Date_of_transaction, Status from Transaction, Patient, Donor where (Patient.User_ID = %s and Patient.Patient_ID = Transaction.Patient_ID) or (Donor.User_Id= %s and Donor.Donor_ID = Transaction.Donor_ID)" %((request.form['User_ID']),(request.form['User_ID']))
-        #
-        res_pat = ()
-        res_dnr = ()
-        res_trans = ()
-        mycursor.execute(qry_pat)
-        if(mycursor.rowcount > 0):
-            res_pat = mycursor.fetchall()
-        fields_pat = mycursor.column_names
-        #
-        mycursor.execute(qry_don)
-        if(mycursor.rowcount > 0):
-            res_dnr = mycursor.fetchall()
-        fields_dnr = mycursor.column_names
-        #
-        mycursor.execute(qry_trans)
-        if(mycursor.rowcount > 0):
-            res_trans = mycursor.fetchall()
-        fields_trans = mycursor.column_names
-        print(res_trans)
-        if("show" in request.form):
-            return render_template('show_detail_2.html',res = res,fields = fields, not_found=not_found, phone_no = phone_no, res_dnr = res_dnr, res_pat = res_pat,res_trans = res_trans,fields_trans = fields_trans, fields_dnr = fields_dnr, fields_pat = fields_pat)
-        if("update" in request.form):
-            return render_template('update_detail.html',res = upd_res,fields = fields_upd, not_found=not_found)
-        if "delete" in request.form:
-            if not_found:
-                return render_template('show_detail_2.html',res = res,fields = fields, not_found=not_found, phone_no = phone_no,  res_dnr = res_dnr, res_pat = res_pat,res_trans = res_trans,fields_trans = fields_trans, fields_dnr = fields_dnr, fields_pat = fields_pat)
-            else:
-                qry2 = "DELETE FROM User where User_ID = %s" %(request.form['User_ID'])
-                mycursor.execute(qry2)
-                mydb.commit()
-                return render_template("home.html")
-
-@app.route("/search_detail",methods = ['POST','GET'])
-def search_detail():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('search_detail.html')
-
 #--------------Adding Information----------------------------
 
 @app.route("/add_<id>_page",methods = ['POST','GET'])
@@ -120,69 +53,15 @@ def add_page(id):
 
     return render_template('add_page.html',success=request.args.get('success'), error=request.args.get('error'), fields = fields, id= id)
 
-@app.route("/add_User", methods=['POST','GET'])
-def add_User():
+@app.route("/add_<id>_page2",methods = ['POST','GET'])
+def add_page2(id):
     if not session.get('login'):
         return redirect( url_for('home') )
-    qry = "SELECT * from User"
+    qry = "SELECT * from " + id.capitalize()
     mycursor.execute(qry)
     fields = mycursor.column_names
 
-    val = ()
-
-    for field in fields:
-        temp = request.form.get(field)
-        if field not in ['User_ID','Medical_insurance'] and temp != '':
-            temp = "\'"+temp+"\'"
-        if temp == '':
-            temp = 'NULL'
-        val = val + (temp,)
-
-    qry = "INSERT INTO User Values (%s,%s,%s,%s,%s,%s,%s,%s)"%val
-    print(qry)
-    success = True
-    error = False
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error : User not Inserted")
-        error = True
-        success = False
-    mydb.commit()
-
-    return redirect(url_for('add_page', id='User', error=error,success=success))
-
-@app.route("/add_User_phone_no", methods=['POST','GET'])
-def add_User_phone_no():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "SELECT * from User_phone_no"
-    mycursor.execute(qry)
-    fields = mycursor.column_names
-
-    val = ()
-
-    for field in fields:
-        temp = request.form.get(field)
-        if field not in ['User_ID','Phone_no'] and temp != '':
-            temp = "\'"+temp+"\'"
-        if temp == '':
-            temp = 'NULL'
-        val = val + (temp,)
-
-    qry = "INSERT INTO User_phone_no Values (%s,%s)"%val
-    print(qry)
-    success = True
-    error = False
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error : User not Inserted")
-        error = True
-        success = False
-    mydb.commit()
-
-    return redirect(url_for('add_page', id='User_phone_no', error=error,success=success))
+    return render_template('add_page2.html',success=request.args.get('success'), error=request.args.get('error'), fields = fields, id= id)
 
 @app.route("/add_Patient", methods=['POST','GET'])
 def add_Patient():
@@ -191,18 +70,19 @@ def add_Patient():
     qry = "SELECT * from Patient"
     mycursor.execute(qry)
     fields = mycursor.column_names
-
+    
     val = ()
 
     for field in fields:
         temp = request.form.get(field)
-        if field not in ['Patient_ID','User_ID','Doctor_ID'] and temp != '':
-            temp = "\'"+temp+"\'"
-        if temp == '':
-            temp = 'NULL'
-        val = val + (temp,)
+        if field not in ['Patient_ID']:    
+            if field not in ['Patient_ID','Doctor_ID'] and temp != '':
+                temp = "\'"+temp+"\'"
+            if temp == '':
+                temp = 'NULL'
+            val = val + (temp,)
 
-    qry = "INSERT INTO Patient Values (%s,%s,%s,%s,%s)"%val
+    qry = "INSERT INTO Patient(Name, Date_of_Birth, Medical_insurance, Medical_history, Street, City, State, organ_req, reason_of_procurement, Doctor_ID) Values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"%val
     print(qry)
     success = True
     error = False
@@ -216,6 +96,39 @@ def add_Patient():
 
     return redirect(url_for('add_page', id='Patient', error=error,success=success))
 
+@app.route("/add_patient_emergency_phone", methods=['POST','GET'])
+def add_patient_emergency_phone():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "SELECT * from patient_emergency_phone"
+    mycursor.execute(qry)
+    fields = mycursor.column_names
+
+    val = ()
+
+    for field in fields:
+        temp = request.form.get(field)
+        if field not in ['Patient_ID','emergency_no'] and temp != '':
+            temp = "\'"+temp+"\'"
+        if temp == '':
+            temp = 'NULL'
+        val = val + (temp,)
+
+    qry = "INSERT INTO patient_emergency_phone Values (%s,%s)"%val
+    print(qry)
+    success = True
+    error = False
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error : Patient not Inserted")
+        error = True
+        success = False
+    mydb.commit()
+
+    return redirect(url_for('add_page2', id='patient_emergency_phone', error=error,success=success))
+
+
 @app.route("/add_Donor", methods=['POST','GET'])
 def add_Donor():
     if not session.get('login'):
@@ -226,13 +139,15 @@ def add_Donor():
     val = ()
     for field in fields:
         temp = request.form.get(field)
-        if field not in ['Donor_ID','User_ID','Organization_ID'] and temp != '':
-            temp = "\'"+temp+"\'"
-        if temp == '':
-            temp = 'NULL'
-        val = val + (temp,)
+        if field not in ['Donor_ID']:        
+            if field not in ['Donor_ID','Organization_ID'] and temp != '':
+                temp = "\'"+temp+"\'"
+            if temp == '':
+                temp = 'NULL'
+            val = val + (temp,)
+    
     mycursor.execute( "START TRANSACTION;" )
-    qry = "INSERT INTO Donor Values (%s,%s,%s,%s,%s)"%val
+    qry = "INSERT INTO Donor(Name, Date_of_Birth, Medical_insurance, Medical_history, Street, City, State, organ_donated, date_of_death, Organization_ID) Values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"%val
     print(qry)
     success = True
     error = False
@@ -242,14 +157,48 @@ def add_Donor():
         print("Error : User not Inserted")
         error = True
         success = False
-
+        
     mycursor.callproc('add_organ')
 
     mycursor.execute("COMMIT;")
 
     mydb.commit()
 
+    
     return redirect(url_for('add_page', id='Donor', error=error,success=success))
+
+@app.route("/add_donor_emergency_phone", methods=['POST','GET'])
+def add_donor_emergency_phone():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "SELECT * from donor_emergency_phone"
+    mycursor.execute(qry)
+    fields = mycursor.column_names
+
+    val = ()
+
+    for field in fields:
+        temp = request.form.get(field)
+        if field not in ['Donor_ID','emergency_no'] and temp != '':
+            temp = "\'"+temp+"\'"
+        if temp == '':
+            temp = 'NULL'
+        val = val + (temp,)
+
+    qry = "INSERT INTO donor_emergency_phone Values (%s,%s)"%val
+    print(qry)
+    success = True
+    error = False
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error : Donor not Inserted")
+        error = True
+        success = False
+    mydb.commit()
+
+    return redirect(url_for('add_page2', id='donor_emergency_phone', error=error,success=success))
+
 
 @app.route("/add_Doctor", methods=['POST','GET'])
 def add_Doctor():
@@ -263,13 +212,14 @@ def add_Doctor():
 
     for field in fields:
         temp = request.form.get(field)
-        if field not in ['Doctor_ID','Organization_ID'] and temp != '':
-            temp = "\'"+temp+"\'"
-        if temp == '':
-            temp = 'NULL'
-        val = val + (temp,)
+        if field not in ['Doctor_ID']:
+            if field not in ['Doctor_ID','organization_ID'] and temp != '':
+                temp = "\'"+temp+"\'"
+            if temp == '':
+                temp = 'NULL'
+            val = val + (temp,)
 
-    qry = "INSERT INTO Doctor Values (%s,%s,%s,%s)"%val
+    qry = "INSERT INTO Doctor(Doctor_Name, Department_Name, organization_ID) Values (%s,%s,%s)"%val
     print(qry)
     success = True
     error = False
@@ -313,7 +263,7 @@ def add_Doctor_phone_no():
         success = False
     mydb.commit()
 
-    return redirect(url_for('add_page', id='Doctor_phone_no', error=error,success=success))
+    return redirect(url_for('add_page2', id='Doctor_phone_no', error=error,success=success))
 
 @app.route("/add_Organization", methods=['POST','GET'])
 def add_Organization():
@@ -327,13 +277,14 @@ def add_Organization():
 
     for field in fields:
         temp = request.form.get(field)
-        if field not in ['Government_approved','Organization_ID'] and temp != '':
-            temp = "\'"+temp+"\'"
-        if temp == '':
-            temp = 'NULL'
-        val = val + (temp,)
+        if field not in ['Organization_ID']:
+            if field not in ['Government_approved','Organization_ID'] and temp != '':
+                temp = "\'"+temp+"\'"
+            if temp == '':
+                temp = 'NULL'
+            val = val + (temp,)
 
-    qry = "INSERT INTO Organization Values (%s,%s,%s,%s)"%val
+    qry = "INSERT INTO Organization(Organization_name, Location, Government_approved) Values (%s,%s,%s)"%val
     print(qry)
     success = True
     error = False
@@ -377,7 +328,7 @@ def add_Organization_phone_no():
         success = False
     mydb.commit()
 
-    return redirect(url_for('add_page', id='Organization_phone_no', error=error,success=success))
+    return redirect(url_for('add_page2', id='Organization_phone_no', error=error,success=success))
 
 @app.route("/add_Organization_head", methods=['POST','GET'])
 def add_Organization_head():
@@ -409,7 +360,7 @@ def add_Organization_head():
         success = False
     mydb.commit()
 
-    return redirect(url_for('add_page', id='Organization_head', error=error,success=success))
+    return redirect(url_for('add_page2', id='Organization_head', error=error,success=success))
 
 @app.route("/add_Transaction", methods=['POST','GET'])
 def add_Transaction_head():
@@ -449,89 +400,19 @@ def add_Transaction_head():
 
     mydb.commit()
 
-    return redirect(url_for('add_page', id='Transaction', error=error,success=success))
+    return redirect(url_for('add_page2', id='Transaction', error=error,success=success))
 
-#------------------------Update details-------------------------------------		#-------------------------------------------------------------
+#----------------------------Search-----------------------------------------
 
-@app.route("/update_user_page",methods = ['POST','GET'])
-def update_user_page():
+@app.route("/search_detail",methods = ['POST','GET'])
+def search_detail():
     if not session.get('login'):
         return redirect( url_for('home') )
-    qry_upd = "Select * from User"
-    mycursor.execute(qry_upd)
-    fields_upd = mycursor.column_names
-    upd_res=[None]*len(fields_upd)
-    return render_template('update_user_page.html',fields = fields_upd,res = upd_res)
+    return render_template('search_detail.html')
 
-@app.route("/update_user_details",methods = ['GET','POST'])
-def update_details():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    mycursor.execute("SELECT * from User")
-    fields = mycursor.column_names
-    qry = "UPDATE User SET "
-    for field in fields:
-        if request.form[field] not in ['None','']:
-            if field in ['User_ID','Medical_insurance']:
-                qry = qry + "%s = %s , " %(field,request.form[field])
-            else:
-                qry = qry + " %s = \'%s\' , " %(field,request.form[field])
-        else:
-            qry = qry + "%s = NULL , " %(field)
-    qry = qry[:-2]
-    qry = qry + "WHERE User_ID = %s;" %(request.form['User_ID'])
-    print(qry)
-    try:
-        mycursor.execute(qry)
-    except:
-        print("update error")
-    mydb.commit()
-    qry2 = "select * from User where User_ID = %s" %(request.form['User_ID'])
-    mycursor.execute(qry2)
-    res = mycursor.fetchone()
-    qry = "Select * from User where User.User_ID = %s" %(request.form['User_ID'])
-    qry1 = "Select * from User_phone_no where User_ID = %s" %(request.form['User_ID'])
-    mycursor.execute(qry)
-    not_found=False
-    res=()
-    if(mycursor.rowcount > 0):
-        res = mycursor.fetchone()
-    else:
-        not_found=True
-    fields = mycursor.column_names
-    qry_upd = "Select * from User where User_ID = %s" %(request.form['User_ID'])
-    mycursor.execute(qry_upd)
-    upd_res = ()
-    if(mycursor.rowcount > 0):
-        upd_res = mycursor.fetchone()
-    fields_upd = mycursor.column_names
-    mycursor.execute(qry1)
-    phone_no = mycursor.fetchall()
-    qry_pat = "select Patient_ID, organ_req, reason_of_procurement, Doctor_name from Patient inner join Doctor on Doctor.Doctor_ID = Patient.Doctor_ID and User_ID = %s" %(request.form['User_ID'])
-    qry_don = "select Donor_ID, organ_donated, reason_of_donation, Organization_name from Donor inner join Organization on Organization.Organization_ID = Donor.Organization_ID and User_ID = %s" %(request.form['User_ID'])
-    qry_trans = "select distinct Transaction.Patient_ID, Transaction.Donor_ID, Organ_ID, Date_of_transaction, Status from Transaction, Patient, Donor where (Patient.User_ID = %s and Patient.Patient_ID = Transaction.Patient_ID) or (Donor.User_Id= %s and Donor.Donor_ID = Transaction.Donor_ID)" %((request.form['User_ID']),(request.form['User_ID']))
-    #
-    res_pat = ()
-    res_dnr = ()
-    res_trans = ()
-    mycursor.execute(qry_pat)
-    if(mycursor.rowcount > 0):
-        res_pat = mycursor.fetchall()
-    fields_pat = mycursor.column_names
-    #
-    mycursor.execute(qry_don)
-    if(mycursor.rowcount > 0):
-        res_dnr = mycursor.fetchall()
-    fields_dnr = mycursor.column_names
-    #
-    mycursor.execute(qry_trans)
-    if(mycursor.rowcount > 0):
-        res_trans = mycursor.fetchall()
-    fields_trans = mycursor.column_names
+#----------------------------Update-----------------------------------------
 
-    return render_template('show_detail_2.html',res = res,fields = fields, not_found=not_found, phone_no = phone_no, res_dnr = res_dnr, res_pat = res_pat,res_trans = res_trans,fields_trans = fields_trans, fields_dnr = fields_dnr, fields_pat = fields_pat)
     
-
 @app.route("/update_patient_page",methods = ['POST','GET'])
 def update_patient_page():
     if not session.get('login'):
@@ -690,6 +571,105 @@ def update_organization_details():
     res = mycursor.fetchone()
     return render_template("show_detail.html",res = res,fields=fields,not_found = False)
 
+#----------------------------Remove-----------------------------------------
+
+@app.route('/remove_patient',methods=['GET','POST'])
+def remove_patient():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    return render_template('/remove_patient.html')
+
+@app.route('/remove_donor',methods=['GET','POST'])
+def remove_donor():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    return render_template('/remove_donor.html')
+
+@app.route('/remove_doctor',methods=['GET','POST'])
+def remove_doctor():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    return render_template('/remove_doctor.html')
+
+@app.route('/remove_organization',methods=['GET','POST'])
+def remove_organization():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    return render_template('/remove_organization.html')
+
+@app.route('/remove_organization_head',methods=['GET','POST'])
+def remove_organization_head():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    return render_template('/remove_organization_head.html')
+
+
+#----------------Actual Deletion from database------------------------
+
+@app.route('/del_patient',methods=['GET','POST'])
+def del_patient():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "delete from Patient where Patient_ID="+str(request.form['Patient_ID'])+" and organ_req=\'%s\'"%(request.form['organ_req'])
+    print(qry)
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error in deletion")
+    mydb.commit()
+    return redirect( url_for('home') )
+
+@app.route('/del_donor',methods=['GET','POST'])
+def del_donor():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "delete from Donor where Donor_ID="+str(request.form['Donor_ID'])+" and organ_donated=\'%s\'" %request.form['organ_donated']
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error in deletion")
+    mydb.commit()
+    return redirect( url_for('home') )
+
+
+@app.route('/del_doctor',methods=['GET','POST'])
+def del_doctor():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "delete from Doctor where Doctor_ID="+str(request.form['Doctor_ID'])
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error in deletion")
+    mydb.commit()
+    return redirect( url_for('home') )
+
+
+@app.route('/del_organization',methods=['GET','POST'])
+def del_organization():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "delete from Organization where Organization_ID="+str(request.form['Organization_ID'])
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error in deletion")
+    mydb.commit()
+    return redirect( url_for('home') )
+
+
+@app.route('/del_organization_head',methods=['GET','POST'])
+def del_organization_head():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "delete from Organization_head where Organization_ID="+str(request.form['Organization_ID'])+" and Employee_ID="+str(request.form['Employee_ID'])
+    try:
+        mycursor.execute(qry)
+    except:
+        print("Error in deletion")
+    mydb.commit()
+    return redirect( url_for('home') )
+
 #----------------------------Logout-----------------------------------------
 @app.route("/logout", methods=['POST','GET'])
 def logout():
@@ -697,18 +677,45 @@ def logout():
     session['isAdmin'] = False
     return redirect("/login")
 
-#-----------------------Searching Information------------------------------
+#-------------------generatecertificate---------------------------
 
-@app.route("/search_User_details",methods=['GET','POST'])
-def search_User_details():
+@app.route('/get_id',methods=['GET','POST'])
+def get_id():
     if not session.get('login'):
         return redirect( url_for('home') )
-    qry = "SELECT * from User"
+    return render_template('/getid.html')
+
+@app.route("/generate_document",methods=['GET','POST'])
+def display_donor_details():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "Select Name, DATE_FORMAT(FROM_DAYS(DATEDIFF(now(), Date_Of_Birth)), '%Y')+0 AS Age, organ_donated from Donor where Donor_ID="+str(request.form['Donor_ID'])
     mycursor.execute(qry)
     fields = mycursor.column_names
     res = mycursor.fetchall()
 
-    return render_template('/search_and_show_list.html',res=res,fields=fields)
+    return render_template('/donationcert.html',res=res,fields=fields)
+
+#-----------------------GenerateCard----------------------------------
+
+@app.route('/get_id2',methods=['GET','POST'])
+def get_id2():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    return render_template('/getid2.html')
+
+@app.route("/generate_card",methods=['GET','POST'])
+def generate_card():
+    if not session.get('login'):
+        return redirect( url_for('home') )
+    qry = "Select Name, DATE_FORMAT(FROM_DAYS(DATEDIFF(now(), Date_Of_Birth)), '%Y')+0 AS Age, organ_donated, curdate() from Donor where Donor_ID="+str(request.form['Donor_ID'])
+    mycursor.execute(qry)
+    fields = mycursor.column_names
+    res = mycursor.fetchall()
+
+    return render_template('/donationcard.html',res=res,fields=fields)
+
+#-----------------------Searching Information------------------------------
 
 @app.route("/search_Patient_details",methods=['GET','POST'])
 def search_Patient_details():
@@ -795,124 +802,6 @@ def search_log_details():
     fields = mycursor.column_names
     res = mycursor.fetchall()
     return render_template('/search_and_show_list.html',res=res,fields=fields)
-
-#---------------------Remove Pages--------------------------------------
-
-@app.route('/remove_user',methods=['GET','POST'])
-def remove_user():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('/remove_user.html')
-
-@app.route('/remove_patient',methods=['GET','POST'])
-def remove_hostel():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('/remove_patient.html')
-
-@app.route('/remove_donor',methods=['GET','POST'])
-def remove_room():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('/remove_donor.html')
-
-@app.route('/remove_doctor',methods=['GET','POST'])
-def remove_doctor():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('/remove_doctor.html')
-
-@app.route('/remove_organization',methods=['GET','POST'])
-def remove_organization():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('/remove_organization.html')
-
-@app.route('/remove_organization_head',methods=['GET','POST'])
-def remove_organization_head():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    return render_template('/remove_organization_head.html')
-
-
-#----------------Actual Deletion from database------------------------
-
-@app.route('/del_user',methods=['GET','POST'])
-def del_hostel():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "delete from User where User_ID="+str(request.form['User_ID'])
-    print(qry)
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error in deletion")
-    mydb.commit()
-    return redirect( url_for('home') )
-
-@app.route('/del_patient',methods=['GET','POST'])
-def del_patient():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "delete from Patient where Patient_ID="+str(request.form['Patient_ID'])+" and organ_req=\'%s\'"%(request.form['organ_req'])
-    print(qry)
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error in deletion")
-    mydb.commit()
-    return redirect( url_for('home') )
-
-@app.route('/del_donor',methods=['GET','POST'])
-def del_donor():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "delete from Donor where Donor_ID="+str(request.form['Donor_ID'])+" and organ_donated=\'%s\'" %request.form['organ_donated']
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error in deletion")
-    mydb.commit()
-    return redirect( url_for('home') )
-
-
-@app.route('/del_doctor',methods=['GET','POST'])
-def del_doctor():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "delete from Doctor where Doctor_ID="+str(request.form['Doctor_ID'])
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error in deletion")
-    mydb.commit()
-    return redirect( url_for('home') )
-
-
-@app.route('/del_organization',methods=['GET','POST'])
-def del_organization():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "delete from Organization where Organization_ID="+str(request.form['Organization_ID'])
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error in deletion")
-    mydb.commit()
-    return redirect( url_for('home') )
-
-
-@app.route('/del_organization_head',methods=['GET','POST'])
-def del_organization_head():
-    if not session.get('login'):
-        return redirect( url_for('home') )
-    qry = "delete from Organization_head where Organization_ID="+str(request.form['Organization_ID'])+" and Employee_ID="+str(request.form['Employee_ID'])
-    try:
-        mycursor.execute(qry)
-    except:
-        print("Error in deletion")
-    mydb.commit()
-    return redirect( url_for('home') )
 
 if __name__ == "__main__":
     app.secret_key = 'sec key'
