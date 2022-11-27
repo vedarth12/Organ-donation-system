@@ -23,19 +23,26 @@
 			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
 		</form>
 	</nav>
-	<div class="jumbotron">
-		<center>
-			<h1 class="display-4">Organ Procurement and Transplantation Management System</h1>
-		</center>
-	</div>
+	<div class="jumbotron" style="background-color: #DEF5E5;">
+        <center>
+            <h1 class="display-4" style="font-weight: bold;">Delete Donor</h1>
+        </center>
+    </div>
 	<form action="/del_donor" method="POST" class="container">
 		<div class="form-group">
 			<label>Donor ID</label>
-			<input type="number" name="Donor_ID" class="form-control">
+			<input name="Donor_ID" class="form-control">
 		</div>
 		<div class="form-group">
-			<label>Organ donated by the donor</label>
-			<input type="text" name="organ_donated" class="form-control">
+			<label>Organ Donated</label><br>
+			<input type="radio" id="lungs" name="organ_donate" value="lungs">
+				<label for="lungs">Lungs</label><br>
+				<input type="radio" id="pancreas" name="organ_donate" value="pancreas">
+				<label for="pancreas">Pancreas</label><br>
+				<input type="radio" id="kidney" name="organ_donate" value="kidney">
+				<label for="kidney">Kidney</label><br>
+				<input type="radio" id="liver" name="organ_donate" value="liver">
+				<label for="liver">Liver</label><br>
 		</div>
 		<button class="btn btn-primary" type="submit" style="width:24%;" name="delete">Delete Donor</button>
 	</form>

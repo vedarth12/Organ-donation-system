@@ -68,7 +68,7 @@
 				<div class="card-body">
 					<center>
 						<div>
-							<form action="/add_Patient_page" method="POST">
+							<form action="/add_Patient_page" method="POST" id="Patient">
 								<button class="btn btn-primary" style="width:25%" type="submit">Add Patient</button>
 							</form>
 						</div>
@@ -76,8 +76,8 @@
 					<br>
 					<center>
 						<div>
-						<form action="/add_patient_emergency_phone_page2" method="POST">
-							<button class="btn btn-primary" style="width:25%" type="submit">Add Patient Phone Number</button>
+						<form action="/add_PatientMH_page" method="POST">
+							<button class="btn btn-primary" style="width:25%" type="submit">Add Patient Medical History</button>
 						</form>
 						</div>
 					</center>
@@ -92,55 +92,31 @@
 					<br>
 					<center>
 						<div>
-						<form action="/add_donor_emergency_phone_page2" method="POST">
-							<button class="btn btn-primary" style="width:25%" type="submit">Add Donor Phone Number</button>
+						<form action="/add_DonorMH_page" method="POST">
+							<button class="btn btn-primary" style="width:25%" type="submit">Add Donor Medical History</button>
 						</form>
 						</div>
 					</center>
 					<br>
-						<center>
-							<div>
-							<form action="/add_Doctor_page" method="POST">
-								<button class="btn btn-primary" style="width:25%" type="submit">Add Doctor</button>
-							</form>
-							</div>
-						</center>
-						<br>
-						<center>
-							<div>
-							<form action="/add_Doctor_phone_no_page2" method="POST">
-								<button class="btn btn-primary" style="width:25%" type="submit">Add Doctor Phone Number</button>
-							</form>
-							</div>
-						</center>
-						<br>
-						<center>
+					<center>
 						<div>
-							<form action="/add_Organization_page" method="POST">
-								<button class="btn btn-primary" style="width:25%" type="submit">Add Organization</button>
+							<form action="/add_Relative_page" method="POST" id="Patient">
+								<button class="btn btn-primary" style="width:25%" type="submit">Add Donor's Relative</button>
 							</form>
 						</div>
 					</center>
 					<br>
-          			<center>
+					<center>
 						<div>
-							<form action="/add_Organization_phone_no_page2" method="POST">
-								<button class="btn btn-primary" style="width:25%" type="submit">Add Organization Phone Number</button>
-							</form>
+						<form action="/add_Doctor_page" method="POST">
+							<button class="btn btn-primary" style="width:25%" type="submit">Add Doctor</button>
+						</form>
 						</div>
 					</center>
 					<br>
-          			<center>
+					<center>
 						<div>
-							<form action="/add_Organization_head_page2" method="POST">
-								<button class="btn btn-primary" style="width:25%" type="submit">Add Organization Head</button>
-							</form>
-						</div>
-					</center>
-          				<br>
-         			 <center>
-						<div>
-							<form action="/add_Transaction_page2" method="POST">
+							<form action="/add_Transaction_page" method="POST">
 								<button class="btn btn-primary" style="width:25%" type="submit">Add Transaction</button>
 							</form>
 						</div>
@@ -163,22 +139,6 @@
 				<div class="card-body">
 					<center>
 						<div>
-							<form action="/get_id" method="POST">
-								<button class="btn btn-primary" style="width: 25%;" type="submit">Donor Document</button>
-							</form>
-						</div>
-					</center>
-					<br>
-					<center>
-						<div>
-							<form action="/get_id2" method="POST">
-								<button class="btn btn-primary" style="width: 25%;" type="submit">Donor Card Generator</button>
-							</form>
-						</div>
-					</center>
-					<br>
-					<center>
-						<div>
 							<form action="/search_Patient_details" method="POST">
 								<button class="btn btn-primary" style="width: 25%;" type="submit">Search Patient by Details</button>
 							</form>
@@ -193,10 +153,18 @@
 						</div>
 					</center>
 					<br>
-          <center>
+					<center>
+						<div>
+							<form action="/search_Future_Donor_details" method="POST">
+								<button class="btn btn-primary" style="width: 25%;" type="submit">Search Future Donors by Details</button>
+							</form>
+						</div>
+					</center>
+					<br>
+          			<center>
 						<div>
 							<form action="/search_Organ_details" method="POST">
-								<button class="btn btn-primary" style="width: 25%;" type="submit">Search Organ by Details</button>
+								<button class="btn btn-primary" style="width: 25%;" type="submit">Search Organs by Details</button>
 							</form>
 						</div>
 					</center>
@@ -225,18 +193,10 @@
 						</div>
 					</center>
 					<br>
-          <center>
+          			<center>
 						<div>
 							<form action="/search_Transaction" method="POST">
 								<button class="btn btn-primary" style="width: 25%;" type="submit">Search Transaction Details</button>
-							</form>
-						</div>
-					</center>
-					<br>
-          <center>
-						<div>
-							<form action="/search_log" method="POST">
-								<button class="btn btn-primary" style="width: 25%;" type="submit">Search Log Details</button>
 							</form>
 						</div>
 					</center>
@@ -249,7 +209,7 @@
 					  <h5 class="mb-0">
 						  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false"
 						   aria-controls="collapseFour" style=" color: black;">
-							  <strong>Update </strong>
+							  <center><strong>Update</strong></center>
 						  </button>
 					  </h5>
 				  </div>
@@ -279,22 +239,6 @@
 							  </div>
 						  </center>
 						  <br>
-				<center>
-							  <div>
-								  <form action="/update_organization_page" method="POST">
-									  <button class="btn btn-primary" style="width: 25%;" type="submit">Update Organization</button>
-								  </form>
-							  </div>
-						  </center>
-						   <br>
-							<center>
-							  <div>
-								  <form action="/update_organization_head_page" method="POST">
-									  <button class="btn btn-primary" style="width: 25%;" type="submit">Update Organization Head</button>
-								  </form>
-							  </div>
-						  </center> 
-						  <br>
 			  </div>
 			</div>
 		  </div>
@@ -311,14 +255,6 @@
 				<div class="card-body">
 					<center>
 						<div>
-							<form action="/remove_patient" method="POST">
-								<button class="btn btn-primary" style="width: 25%;" type="submit">Remove Patient</button>
-							</form>
-						</div>
-					</center>
-					<br>
-					<center>
-						<div>
 							<form action="/remove_donor" method="POST">
 								<button class="btn btn-primary" style="width: 25%;" type="submit">Remove Donor</button>
 							</form>
@@ -333,22 +269,6 @@
 						</div>
 					</center>
 					<br>
-          <center>
-            <div>
-              <form action="/remove_organization" method="POST">
-                <button class="btn btn-primary" style="width: 25%;" type="submit">Remove Organization</button>
-              </form>
-            </div>
-          </center>
-          <br>
-          <center>
-            <div>
-              <form action="/remove_organization_head" method="POST">
-                <button class="btn btn-primary" style="width: 25%;" type="submit">Remove Organization Head</button>
-              </form>
-            </div>
-          </center>
-          <br>
 				</div>
 			</div>
 		</div>
@@ -365,7 +285,7 @@
 				<div class="card-body">
 					<center>
 						<div>
-							<form action="/add_future_donor" method="POST">
+							<form action="/add_futuredonor_page" method="POST">
 								<button class="btn btn-primary" style="width: 25%;" type="submit">Register to Donate</button>
 							</form>
 						</div>
@@ -373,7 +293,7 @@
 					<br>
 					<center>
 						<div>
-							<form action="/getid" method="POST">
+							<form action="/get_id" method="POST">
 								<button class="btn btn-primary" style="width: 25%;" type="submit">Generate Certificate</button>
 							</form>
 						</div>
@@ -381,8 +301,54 @@
 					<br>
 					<center>
 						<div>
-							<form action="/getid2" method="POST">
+							<form action="/get_id2" method="POST">
 								<button class="btn btn-primary" style="width: 25%;" type="submit">Generate Donor Card</button>
+							</form>
+						</div>
+					</center>
+					<br>
+				</div>
+			</div>
+		</div>
+		<div class="card" style="background-color: #DEF5E5;">
+			<div class="card-header" id="headingseven" data-toggle="collapse" data-target="#collapseseven">
+				<h5 class="mb-0">
+					<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseseven" aria-expanded="false"
+					 aria-controls="collapseseven" style=" color: black;">
+						<strong>Logs</strong>
+					</button>
+				</h5>
+			</div>
+			<div id="collapseseven" class="collapse" aria-labelledby="headingseven" data-parent="#accordion">
+				<div class="card-body">
+					<center>
+						<div>
+							<form action="/search_patient_log" method="POST">
+								<button class="btn btn-primary" style="width: 25%;" type="submit">Patient Log Table</button>
+							</form>
+						</div>
+					</center>
+					<br>
+					<center>
+						<div>
+							<form action="/search_donor_log" method="POST">
+								<button class="btn btn-primary" style="width: 25%;" type="submit">Donor Log Table</button>
+							</form>
+						</div>
+					</center>
+					<br>
+					<center>
+						<div>
+							<form action="/search_organ_log" method="POST">
+								<button class="btn btn-primary" style="width: 25%;" type="submit">Organ Log Table</button>
+							</form>
+						</div>
+					</center>
+					<br>
+					<center>
+						<div>
+							<form action="/search_transaction_log" method="POST">
+								<button class="btn btn-primary" style="width: 25%;" type="submit">Transaction Log Table</button>
 							</form>
 						</div>
 					</center>

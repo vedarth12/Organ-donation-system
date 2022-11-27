@@ -23,15 +23,15 @@
 			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
 		</form>
 	</nav>
-	<div class="jumbotron">
-		<center>
-			<h1 class="display-4">Organ Procurement and Transplantation Management System</h1>
-		</center>
-	</div>
+	<div class="jumbotron" style="background-color: #DEF5E5;">
+        <center>
+            <h1 class="display-4" style="font-weight: bold;">Delete Doctor</h1>
+        </center>
+    </div>
 	<form action="/del_doctor" method="POST" class="container">
 		<div class="form-group">
 			<label>Doctor ID</label>
-			<input type="number" name="Doctor_ID" class="form-control">
+			<input name="Doctor_ID" class="form-control">
 		</div>
 		<button class="btn btn-primary" type="submit" style="width:24%;" name="delete">Delete Doctor</button>
 	</form>

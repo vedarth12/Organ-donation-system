@@ -1,0 +1,97 @@
+<!doctype HTML>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<html>
+    <title>Details</title>
+    <body>
+        <nav class="navbar navbar-dark bg-dark justify-content-between">
+            <form action = "/home">
+                <button style = "border: 0px solid transparent;" class = "btn btn-outline-primary">HOME</button>
+            </form>
+            <form class="form-inline" action = "/logout">
+                <label style="color:white; padding-right: 10px" >Hi {{session.get('username')}}!</label>
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </nav>
+        <div class="jumbotron" style="background-color: #DEF5E5;">
+            <center><h1 class="display-4" style="font-weight: bold;">Patient Information</h1></center>
+        </div>
+        {% if error == 'True' %}
+            ERROR
+        {% endif %}
+
+        {% if success == 'True' %}
+            Successfully Added Patient
+        {% endif %}
+
+        <form action = "/add_Patient" method = 'POST' >
+            <table class = "table table-striped table-sm">
+                <tr>
+                    <th scope="row" style="text-align: center;">Name</th>
+                    <td>
+                        <input class = "form-control"  name = "Name">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Date of Birth</th>
+                    <td>
+                        <input class = "form-control" type="date" name = "Date_of_Birth">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Gender</th>
+                    <td>
+                        <input type="radio" id="male" name="Gender" value="Male">
+                        <label for="male">Male</label><br>
+                        <input type="radio" id="female" name="Gender" value="Female">
+                        <label for="female">Female</label><br>
+                        <input type="radio" id="other" name="Gender" value="Other">
+                        <label for="other">Other</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Phone Number</th>
+                    <td>
+                        <input class = "form-control"  name = "Phone_no">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Address</th>
+                    <td>
+                        <input class = "form-control"  name = "Address">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Organ Required</th>
+                    <td>
+                        <input type="radio" id="lungs" name="organ_donate" value="lungs">
+                        <label for="lungs">Lungs</label><br>
+                        <input type="radio" id="pancreas" name="organ_donate" value="pancreas">
+                        <label for="pancreas">Pancreas</label><br>
+                        <input type="radio" id="kidney" name="organ_donate" value="kidney">
+                        <label for="kidney">Kidney</label><br>
+                        <input type="radio" id="liver" name="organ_donate" value="liver">
+                        <label for="liver">Liver</label><br>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Reason of Procurement</th>
+                    <td>
+                        <input class = "form-control"  name = "reason_of_procurement">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" style="text-align: center;">Doctor Name</th>
+                    <td>
+                        <input class = "form-control"  name = "Doctor_Name">
+                    </td>
+                </tr>
+            </table>
+            <center><button class = "btn btn-success" type="submit">Add Patient</button></center>
+        </form>
+    </body>
+</html>
